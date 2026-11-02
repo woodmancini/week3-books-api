@@ -27,5 +27,23 @@ def get_book(book_id: int, db: Session = Depends(get_db)):
     if book is None:
         raise HTTPException(status_code=404, detail="Book not found")
 
-# TO DO:
-# @app.post("/books" ... )
+    return book
+
+@app.post("/books", response_model=schemas.BookResponse, status_code=201)
+def main(book_data : schemas.BookCreate, db: Session = Depends(get_db)):
+    
+    book = models.Book(
+        title=book_data.title,
+        author=book_data.author,
+        year=book_data.year
+    )
+
+    try:
+        db.add(book)
+        db.commit()
+        db.refresh(book)
+        return book
+
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Book already exists")

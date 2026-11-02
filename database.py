@@ -26,6 +26,8 @@ engine = create_engine(
     # across its request threads
 )
 
+# sessionlocal is a session factory - you call SessionLocal(), it triggers the __call__ method,
+# and returns a new Session object
 SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 # bind=engine: This connects the factory to your engine. When the session actually needs to talk 
 # to the database (to query data or commit changes), it borrows a connection from the engine's pool, 
